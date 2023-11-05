@@ -5,7 +5,6 @@ type Config struct {
 }
 
 type Server struct {
-	Host           string
 	Port           string
 	TrustedProxies []string
 }
@@ -13,9 +12,8 @@ type Server struct {
 func NewRandomConfig() Config {
 	return Config{
 		Server: Server{
-			Host:           "localHost",
 			Port:           "8080",
-			TrustedProxies: []string{},
+			TrustedProxies: []string{"localhost"},
 		},
 	}
 }

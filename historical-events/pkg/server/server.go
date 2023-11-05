@@ -28,7 +28,7 @@ func NewServer(logger *logrus.Logger, config config.Config, ginEngine *gin.Engin
 func (server historicalEventsServer) Start() {
 	statusApi.RegisterHandlers(server.ginEngine.Group("/historical-events/api/v1"), server.logger)
 
-	server.ginEngine.Run(fmt.Sprintf("%v:%v", server.config.Server.Host, server.config.Server.Port))
+	server.ginEngine.Run(fmt.Sprintf("%v:%v", "", server.config.Server.Port))
 }
 
 func NewEngine(logger *logrus.Logger, cfg config.Config) *gin.Engine {
