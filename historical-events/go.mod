@@ -32,5 +32,6 @@ require (
 
 require (
 	github.com/gin-gonic/gin v1.9.1
+	github.com/google/wire v0.5.0
 	golang.org/x/sys v0.8.0 // indirect
 )

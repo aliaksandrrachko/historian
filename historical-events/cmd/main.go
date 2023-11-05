@@ -1,10 +1,9 @@
 package main
 
 import (
-	"github.com/aliaksandrrachko/historian/historical-events/pkg/server"
+	"github.com/aliaksandrrachko/historian/historical-events/pkg/wiregen"
 )
 
 func main() {
-	server := server.NewInstance()
-	server.Start()
+	wiregen.InitServer().Start()
 }
