@@ -3,6 +3,7 @@ image: golang:latest
 stages:
   - lint
   - test
+  - build
   - deploy
 
 lint:
@@ -30,4 +31,5 @@ deploy:
   stage: deploy
   script: echo "Define your deployment script!"
   environment: development
-  only: master
+  only: 
+    - master
