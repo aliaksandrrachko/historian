@@ -10,5 +10,6 @@ type StatusApiModel struct {
 type VersionApiModel struct {
 	Version   string `json:"version,omitempty"`
 	GitCommit string `json:"gitCommit,omitempty"`
+	GitAuthor string `json:"gitAuthor,omitempty"`
 	GoVersion string `json:"goVersion,omitempty"`
 }

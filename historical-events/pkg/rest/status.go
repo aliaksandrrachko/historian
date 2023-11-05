@@ -31,6 +31,7 @@ func (sR statusResource) version(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, model.VersionApiModel{
 		Version:   buildInfo.Version,
 		GitCommit: buildInfo.GitCommit,
+		GitAuthor: buildInfo.GitAuthor,
 		GoVersion: buildInfo.GoVersion,
 	})
 }

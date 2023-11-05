@@ -15,6 +15,7 @@ ARG APP_VERSION
 
 ```
 docker build -t hist-evo-backend \
+    --no-cache \
     --build-arg GIT_COMMIT_HASH=$(git rev-parse HEAD) \
     --build-arg GIT_COMMIT_AUTHOR=$(git log -1 --format='%an' HEAD) \
     --build-arg APP_VERSION=v0.0.1-SNAPSHOT \

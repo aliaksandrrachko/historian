@@ -20,8 +20,8 @@ RUN CGO_ENABLED=0 GOOS=linux \
     go build -v -o /usr/local/bin/historical-events  \
     -ldflags="-X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.version=$APP_VERSION' \
         -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.gitCommit=$GIT_COMMIT_HASH' \
-        -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.time=$(date)' \
-        -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.user=$GIT_COMMIT_AUTHOR'" \
+        -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.gitAuthor=$GIT_COMMIT_AUTHOR' \
+        -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.time=$(date)'" \
     ./cmd/
 
 EXPOSE 8080
