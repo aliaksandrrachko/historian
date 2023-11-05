@@ -28,13 +28,19 @@ func NewServer(logger *logrus.Logger, config config.Config, ginEngine *gin.Engin
 func (server historicalEventsServer) Start() {
 	statusApi.RegisterHandlers(server.ginEngine.Group("/historical-events/api/v1"), server.logger)
 
-	server.ginEngine.Run(fmt.Sprintf("%v:%v", "", server.config.Server.Port))
+	if err := server.ginEngine.Run(fmt.Sprintf("%v:%v", "", server.config.Server.Port)); err != nil {
+		panic(err)
+	}
 }
 
 func NewEngine(logger *logrus.Logger, cfg config.Config) *gin.Engine {
 	ginEngine := gin.New()
 	ginEngine.Use(ginlogrus.Logger(logger))
 	ginEngine.Use(gin.Recovery())
-	ginEngine.SetTrustedProxies(cfg.Server.TrustedProxies)
+
+	if err := ginEngine.SetTrustedProxies(cfg.Server.TrustedProxies); err != nil {
+		panic(err)
+	}
+
 	return ginEngine
 }

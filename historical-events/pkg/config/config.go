@@ -13,7 +13,7 @@ func NewRandomConfig() Config {
 	return Config{
 		Server: Server{
 			Port:           "8080",
-			TrustedProxies: []string{"localhost"},
+			TrustedProxies: []string{"127.0.0.1"},
 		},
 	}
 }

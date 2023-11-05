@@ -11,8 +11,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var timeFormat = "02/Jan/2006:15:04:05 -0700"
-
 func Logger(logger logrus.FieldLogger, notLogged ...string) gin.HandlerFunc {
 	hostname, err := os.Hostname()
 	if err != nil {
@@ -87,7 +85,6 @@ func Logger(logger logrus.FieldLogger, notLogged ...string) gin.HandlerFunc {
 }
 
 func NewLogger() *logrus.Logger {
-	// TODO: think change to singleton
 	return &logrus.Logger{
 		Out: os.Stderr,
 		// %d{HH:mm:ss.SSS} %-5level {%thread} [%logger{20}] : %msg%n
