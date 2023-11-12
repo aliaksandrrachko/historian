@@ -22,10 +22,21 @@ test:
     - go vet $(go list ./... | grep -v /vendor/)
     - go test -race $(go list ./... | grep -v /vendor/)
 
-compile:
+build:
   stage: build
   script:
-    - echo "Warn! build"\
+    - cd ./historical-events
+    - mkdir -p $BINARY_OUTPUT_FILE
+    - |
+      go build -v -o $BINARY_OUTPUT_FILE  \
+      -ldflags="-X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.version=$APP_VERSION' \
+          -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.gitCommit=$GIT_COMMIT_HASH' \
+          -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.gitAuthor=$GIT_COMMIT_AUTHOR' \
+          -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.time=$(date)'" \
+      ./cmd/
+  artifacts:
+    paths:
+      - $BINARY_OUTPUT_FILE
 
 deploy:
   stage: deploy
