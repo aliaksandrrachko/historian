@@ -2,7 +2,7 @@ image: golang:latest
 
 variables:
   HIST_EVENTS_BASE_DIR: ./historical-events
-  HIST_EVENTS_EXECUTABLE: $HIST_EVENTS_BASE_DIR/cmd/historical-events
+  HIST_EVENTS_EXECUTABLE: ./cmd/historical-events
 
 stages:
   - lint
@@ -32,9 +32,9 @@ build:
     - cd $HIST_EVENTS_BASE_DIR
     - |
       go build -v -o $HIST_EVENTS_EXECUTABLE  \
-      -ldflags="-X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.version=$APP_VERSION' \
-          -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.gitCommit=$GIT_COMMIT_HASH' \
-          -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.gitAuthor=$GIT_COMMIT_AUTHOR' \
+      -ldflags="-X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.version=$CI_COMMIT_TAG' \
+          -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.gitCommit=$CI_COMMIT_SHA' \
+          -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.gitAuthor=$CI_COMMIT_AUTHOR' \
           -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.time=$(date)'" \
       $HIST_EVENTS_EXECUTABLE.go
   artifacts:
