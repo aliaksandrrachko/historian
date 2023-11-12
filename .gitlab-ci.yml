@@ -8,6 +8,7 @@ stages:
   - lint
   - test
   - build
+  - image
   - deploy
 
 lint:
@@ -43,6 +44,20 @@ build:
   artifacts:
     paths:
       - $HIST_EVENTS_EXECUTABLE
+
+image:
+  stage: image
+  image:
+    name: gcr.io/kaniko-project/executor:debug-v1.3.0
+    entrypoint: [""]
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - |
+      /kaniko/executor --context $HIST_EVENTS_BASE_DIR \
+      --cache=true --cache-repo=$CI_REGISTRY_IMAGE \
+      --dockerfile $HIST_EVENTS_BASE_DIR/DockerfilePreBuild \
+      --destination ${CI_REGISTRY_IMAGE}:$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
 
 deploy:
   stage: deploy
