@@ -1,8 +1,8 @@
 image: golang:latest
 
 variables:
-  HIST_EVENTS_BASE_DIR: ./historical-events
-  HIST_EVENTS_EXECUTABLE: ./cmd/historical-events
+  HIST_EVENTS_BASE_DIR: $CI_PROJECT_DIR/historical-events
+  HIST_EVENTS_EXECUTABLE: $HIST_EVENTS_BASE_DIR/cmd/historical-events
 
 stages:
   - lint
@@ -39,7 +39,7 @@ build:
       $HIST_EVENTS_EXECUTABLE.go
   artifacts:
     paths:
-      - $HIST_EVENTS_BASE_DIR/$HIST_EVENTS_EXECUTABLE
+      - $HIST_EVENTS_EXECUTABLE
 
 deploy:
   stage: deploy
