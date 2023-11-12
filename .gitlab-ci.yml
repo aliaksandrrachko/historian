@@ -1,5 +1,8 @@
 image: golang:latest
 
+variables:
+  BINARY_OUTPUT_FILE: __bin__/$CI_PROJECT_NAME
+
 stages:
   - lint
   - test
