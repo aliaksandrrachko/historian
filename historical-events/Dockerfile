@@ -22,7 +22,7 @@ RUN CGO_ENABLED=0 GOOS=linux \
         -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.gitCommit=$GIT_COMMIT_HASH' \
         -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.gitAuthor=$GIT_COMMIT_AUTHOR' \
         -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.time=$(date)'" \
-    ./cmd/
+    ./cmd/historical-events.go
 
 EXPOSE 8080
 
