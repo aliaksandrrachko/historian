@@ -14,13 +14,13 @@ lint:
   stage: lint
   allow_failure: false
   script:
-    - cd $HIST_EVENTS_BASE_DIR:
+    - cd $HIST_EVENTS_BASE_DIR
     - golangci-lint run -v
 
 test:
   stage: test
   script:
-    - cd $HIST_EVENTS_BASE_DIR:
+    - cd $HIST_EVENTS_BASE_DIR
     - go fmt $(go list ./... | grep -v /vendor/)
     - go vet $(go list ./... | grep -v /vendor/)
     - go test -race $(go list ./... | grep -v /vendor/)
@@ -28,7 +28,7 @@ test:
 build:
   stage: build
   script:
-    - cd $HIST_EVENTS_BASE_DIR:
+    - cd $HIST_EVENTS_BASE_DIR
     - |
       go build -v -o ./cmd/hist-events  \
       -ldflags="-X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.version=$APP_VERSION' \
