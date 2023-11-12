@@ -30,6 +30,9 @@ build:
   script:
     - cd ./historical-events
     - mkdir -p $HIST_EVENTS_BINARY_FILE
+    - echo $(pwd)
+    - echo $HIST_EVENTS_BINARY_FILE
+    - ll
     - |
       go build -v -o $HIST_EVENTS_BINARY_FILE  \
       -ldflags="-X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.version=$APP_VERSION' \
