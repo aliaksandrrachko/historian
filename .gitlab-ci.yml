@@ -28,13 +28,14 @@ test:
 build:
   stage: build
   script:
+    - cd ./historical-events
     - |
-      go build -v -o ./historical-events/cmd/hist-events  \
+      go build -v -o ./cmd/hist-events  \
       -ldflags="-X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.version=$APP_VERSION' \
           -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.gitCommit=$GIT_COMMIT_HASH' \
           -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.gitAuthor=$GIT_COMMIT_AUTHOR' \
           -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.time=$(date)'" \
-      ./historical-events/cmd/main.go
+      ./cmd/main.go
   artifacts:
     paths:
       - ./historical-events/cmd/hist-events
