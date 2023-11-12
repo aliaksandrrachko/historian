@@ -1,0 +1,12 @@
+# syntax=docker/dockerfile:1
+FROM golang:1.21
+
+WORKDIR /app
+
+#TODO add user
+
+COPY ./cmd/historical-events ./
+
+EXPOSE 8080
+
+CMD ["/app/historical-events"]
