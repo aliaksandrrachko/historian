@@ -29,8 +29,8 @@ test:
 build:
   stage: build
   variables: 
-    - CGO_ENABLED: 0
-    - GOOS: linux
+    CGO_ENABLED: 0
+    GOOS: linux
   script:
     - cd $HIST_EVENTS_BASE_DIR
     - |
