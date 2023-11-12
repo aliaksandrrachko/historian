@@ -1,7 +1,7 @@
 image: golang:latest
 
 variables:
-  BINARY_OUTPUT_FILE: __bin__/$CI_PROJECT_NAME
+  HIST_EVENTS_BINARY_FILE: ./$CI_PROJECT_NAME/historical-events
 
 stages:
   - lint
@@ -29,9 +29,9 @@ build:
   stage: build
   script:
     - cd ./historical-events
-    - mkdir -p $BINARY_OUTPUT_FILE
+    - mkdir -p $HIST_EVENTS_BINARY_FILE
     - |
-      go build -v -o $BINARY_OUTPUT_FILE  \
+      go build -v -o $HIST_EVENTS_BINARY_FILE  \
       -ldflags="-X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.version=$APP_VERSION' \
           -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.gitCommit=$GIT_COMMIT_HASH' \
           -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.gitAuthor=$GIT_COMMIT_AUTHOR' \
@@ -39,7 +39,7 @@ build:
       ./cmd/
   artifacts:
     paths:
-      - $BINARY_OUTPUT_FILE
+      - $HIST_EVENTS_BINARY_FILE
 
 deploy:
   stage: deploy
