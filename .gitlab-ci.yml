@@ -39,7 +39,7 @@ build:
       $HIST_EVENTS_EXECUTABLE.go
   artifacts:
     paths:
-      - $HIST_EVENTS_EXECUTABLE
+      - $HIST_EVENTS_BASE_DIR/$HIST_EVENTS_EXECUTABLE
 
 deploy:
   stage: deploy
