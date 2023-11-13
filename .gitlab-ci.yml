@@ -9,6 +9,7 @@ stages:
   - test
   - build
   - image
+  - template
   - deploy
 
 go_lint:
@@ -72,6 +73,17 @@ build_image:
       --cache=true --cache-repo=$CI_REGISTRY_IMAGE \
       --dockerfile $HIST_EVENTS_BASE_DIR/DockerfilePreBuild \
       --destination ${CI_REGISTRY_IMAGE}:$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
+
+template:
+  stage: template
+  image: centosadmin/kubernetes-helm:3.6.3
+  script:
+    - cd $HIST_EVENTS_BASE_DIR
+    - helm template $CI_PROJECT_PATH_SLUG .helm/historical-events-backend
+        --set image.repository=$CI_REGISTRY_IMAGE
+        --set image.tag=$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
+  # only:
+  #   - master
 
 deploy:
   stage: deploy
