@@ -11,13 +11,27 @@ stages:
   - image
   - deploy
 
-lint:
+go_lint:
   image: golangci/golangci-lint:latest
   stage: lint
   allow_failure: false
   script:
     - cd $HIST_EVENTS_BASE_DIR
     - golangci-lint run -v
+
+helm_lint:
+  stage: lint
+  image: centosadmin/kubernetes-helm:3.6.3
+  environment:
+    name: development
+  script:
+    - cd $HIST_EVENTS_BASE_DIR
+    - helm lint .helm/historical-events-backend
+        --set image.repository=$CI_REGISTRY_IMAGE
+        --set image.tag=$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
+  only:
+    - master
+
 
 test:
   stage: test
