@@ -90,10 +90,10 @@ template:
 deploy:dev:
   stage: deploy
   image: centosadmin/kubernetes-helm:3.6.3
-  variables:
-    SECURE_FILES_DOWNLOAD_PATH: ./
-    KUBECONFIG: $KUBECONFIG:./okteto-kube.config
   script:
+    - curl --silent "https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer" | bash 
+    - ls
+    - export KUBECONFIG=$CI_PROJECT_DIR/.secure_files/okteto-kube.config
     - ls
     #- curl https://get.okteto.com -sSfL | sh # download okteto cli
     - cd $HIST_EVENTS_BASE_DIR
