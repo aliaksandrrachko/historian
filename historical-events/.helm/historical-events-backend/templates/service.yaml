@@ -4,6 +4,10 @@ metadata:
   name: {{ include "historical-events-backend.fullname" . }}
   labels:
     {{- include "historical-events-backend.labels" . | nindent 4 }}
+  {{- with .Values.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   type: {{ .Values.service.type }}
   ports:
