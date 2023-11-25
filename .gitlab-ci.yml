@@ -94,7 +94,7 @@ deploy:dev:
     SECURE_FILES_DOWNLOAD_PATH: ./
     KUBECONFIG: $KUBECONFIG:./okteto-kube.config
   script:
-    - ll
+    - ls
     #- curl https://get.okteto.com -sSfL | sh # download okteto cli
     - cd $HIST_EVENTS_BASE_DIR
     - kubectl config get-contexts
