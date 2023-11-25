@@ -7,6 +7,12 @@
 
 # Development
 
+# TODO
+* optimize .gitlab-ci.yaml
+* add icon to chart yaml
+* add health-check to deployment
+* check additional configuration in helm chart
+
 ## Dockerfile
 
 ARG GIT_COMMIT_HASH
