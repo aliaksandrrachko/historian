@@ -91,6 +91,7 @@ deploy:dev:
   stage: deploy
   image: centosadmin/kubernetes-helm:v3.12.3
   variables:
+    OKTETO_VERSION: 2.22.2
     OKTETO_TOKEN: $CI_OKTETO_TOKEN
     OKTETO_URL: https://cloud.okteto.com
   script:
@@ -100,15 +101,9 @@ deploy:dev:
     # - ls
     - curl https://get.okteto.com -sSfL | sh # download okteto cli
     - export PATH=$PATH:/usr/local/bin/okteto
-    - okteto context use $OKTETO_URL --token $OKTETO_TOKEN
+    - okteto context
     - okteto kubeconfig
-    - okteto context list
-    - okteto kubetoken
-    - kubectl version --output yaml
-    - kubectl get pod
     - cd $HIST_EVENTS_BASE_DIR
-    - kubectl config get-contexts
-    - kubectl config use-context cloud_okteto_com-context
     - helm upgrade --install historical-events .helm/historical-events-backend
         --set image.repository=$CI_REGISTRY_IMAGE
         --set image.tag=$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
