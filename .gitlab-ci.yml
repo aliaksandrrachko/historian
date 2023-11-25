@@ -103,8 +103,8 @@ deploy:dev:
     - okteto context use $OKTETO_URL --token $OKTETO_TOKEN
     - okteto kubeconfig
     - okteto context list
-    - kubectl version --output yaml
     - okteto kubetoken
+    - kubectl version --output yaml
     - kubectl get pod
     - cd $HIST_EVENTS_BASE_DIR
     - kubectl config get-contexts
