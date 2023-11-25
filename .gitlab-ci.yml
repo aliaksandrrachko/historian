@@ -79,7 +79,9 @@ template:
   image: centosadmin/kubernetes-helm:3.6.3
   script:
     - cd $HIST_EVENTS_BASE_DIR
-    - helm template $CI_PROJECT_PATH_SLUG .helm/historical-events-backend
+    - >
+      helm template $CI_PROJECT_PATH_SLUG .helm/historical-events-backend
+        --values .helm/historical-events-backend/values-okteto.yaml
         --set image.repository=$CI_REGISTRY_IMAGE
         --set image.tag=$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
   # only:
@@ -95,42 +97,19 @@ deploy:dev:
     OKTETO_URL: https://cloud.okteto.com
     OKTETO_NAMESPACE: ales-litvin
   script:
-    # - curl --silent "https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer" | bash 
-    # - ls
-    # - export KUBECONFIG=$CI_PROJECT_DIR/.secure_files/okteto-kube.config
-    # - ls
     - curl https://get.okteto.com -sSfL | sh # download okteto cli
     - export PATH=$PATH:/usr/local/bin/okteto
     - okteto context
     - okteto kubeconfig
     - cd $HIST_EVENTS_BASE_DIR
     - >
-      helm upgrade --install historical-events .helm/historical-events-backend
+      helm template $CI_PROJECT_PATH_SLUG .helm/historical-events-backend
+        --values .helm/historical-events-backend/values-okteto.yaml
         --set image.repository=$CI_REGISTRY_IMAGE
         --set image.tag=$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
-        --set service.annotations='dev.okteto.com/auto-ingress: "true"'
-        --set imagePullSecrets=historian-gitlab-registry
         --debug
         --atomic
         --timeout 120s
         --namespace $OKTETO_NAMESPACE
   # only:
   #   - master
-
-# deploy:dev:
-#   stage: deploy
-#   image: centosadmin/kubernetes-helm:3.6.3
-#   environment:
-#     name: development
-#   script:
-#     - kubectl config set-cluster k8s --insecure-skip-tls-verify=true --server=$K8S_DEV_API_URL
-#     - kubectl config set-credentials ci --token=$K8S_DEV_CI_TOKEN
-#     - kubectl config set-context ci --cluster=k8s --user=ci
-#     - kubectl config use-context ci
-#     - helm upgrade --install xpaste .helm
-#         --set image=$CI_REGISTRY_IMAGE
-#         --set imageTag=$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
-#         --debug
-#         --atomic
-#         --timeout 120s
-#         --namespace $NAMESPACE-$CI_ENVIRON
