@@ -28,8 +28,8 @@ helm_lint:
   script:
     - cd $HIST_EVENTS_BASE_DIR
     - helm lint .helm/historical-events-backend
-        --set image.repository=$CI_REGISTRY_IMAGE
-        --set image.tag=$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
+      --set image.repository=$CI_REGISTRY_IMAGE
+      --set image.tag=$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
   # only:
   #   - master
 
@@ -79,11 +79,10 @@ template:
   image: centosadmin/kubernetes-helm:3.6.3
   script:
     - cd $HIST_EVENTS_BASE_DIR
-    - >
-      helm template $CI_PROJECT_PATH_SLUG .helm/historical-events-backend
-        --values .helm/historical-events-backend/values-okteto.yaml
-        --set image.repository=$CI_REGISTRY_IMAGE
-        --set image.tag=$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
+    - helm template $CI_PROJECT_PATH_SLUG .helm/historical-events-backend
+      --values .helm/historical-events-backend/values-okteto.yaml
+      --set image.repository=$CI_REGISTRY_IMAGE
+      --set image.tag=$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
   # only:
   #   - master
 
@@ -102,14 +101,13 @@ deploy:dev:
     - okteto context
     - okteto kubeconfig
     - cd $HIST_EVENTS_BASE_DIR
-    - >
-      helm template $CI_PROJECT_PATH_SLUG .helm/historical-events-backend
-        --values .helm/historical-events-backend/values-okteto.yaml
-        --set image.repository=$CI_REGISTRY_IMAGE
-        --set image.tag=$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
-        --debug
-        --atomic
-        --timeout 120s
-        --namespace $OKTETO_NAMESPACE
+    - helm template $CI_PROJECT_PATH_SLUG .helm/historical-events-backend
+      --values .helm/historical-events-backend/values-okteto.yaml
+      --set image.repository=$CI_REGISTRY_IMAGE
+      --set image.tag=$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
+      --debug
+      --atomic
+      --timeout 120s
+      --namespace $OKTETO_NAMESPACE
   # only:
   #   - master
