@@ -89,7 +89,7 @@ template:
 
 deploy:dev:
   stage: deploy
-  image: centosadmin/kubernetes-helm:3.6.3
+  image: centosadmin/kubernetes-helm:v3.12.3
   variables:
     OKTETO_TOKEN: $CI_OKTETO_TOKEN
     OKTETO_URL: https://cloud.okteto.com
