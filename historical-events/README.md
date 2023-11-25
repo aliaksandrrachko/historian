@@ -33,11 +33,17 @@ docker run -it -p 8080:8080 --rm --name hist-evo-backend hist-evo-backend
     -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.time=$(date)'"
 ```
 
-# Known issue
+# Deploy
 
-container 'historical-events-backend' image 'registry.gitlab.com/aliaksandrrachko/historian:main.1085016981' not found or it is private and 'imagePullSecrets' is not properly configured.
+## Create docker-registry secret
 
-2023-11-25 19:53:25.00 UTChistorical-events-historical-events-backend-8484577f4f-t2z6l[pod-event]Successfully assigned ales-litvin/historical-events-historical-events-backend-8484577f4f-t2z6l to gke-cloud-dev-3-de78e4eb-pf05
-2023-11-25 19:53:26.00 UTChistorical-events-historical-events-backend-8484577f4f-t2z6l[pod-event]Pulling image "registry.gitlab.com/aliaksandrrachko/historian:main.1085016981"
-2023-11-25 19:53:27.00 UTChistorical-events-historical-events-backend-8484577f4f-t2z6l[pod-event]Failed to pull image "registry.gitlab.com/aliaksandrrachko/historian:main.1085016981": rpc error: code = Unknown desc = failed to pull and unpack image "registry.gitlab.com/aliaksandrrachko/historian:main.1085016981": failed to resolve reference "registry.gitlab.com/aliaksandrrachko/historian:main.1085016981": failed to authorize: failed to fetch anonymous token: unexpected status from GET request to https://gitlab.com/jwt/auth?scope=repository%3Aaliaksandrrachko%2Fhistorian%3Apull&service=container_registry: 403 Forbidden
-2023-11-25 19:53:27.00 UTChistorical-events-historical-events-backend-8484577f4f-t2z6l[pod-event]Error: ErrImagePull
+```
+kubectl delete secret historian-gitlab-registry --namespace "$NAMESPACE"
+
+kubectl create secret docker-registry historian-gitlab-registry \
+      --docker-server registry.gitlab.com \
+      --docker-email "aliaksandrrachko@gitlab.com" \
+      --docker-username "$DEPLOY_TOKEN_USERNAME" \
+      --docker-password "$DEPLOY_TOKEN_VALUE" \
+      --namespace "$NAMESPACE"
+```
