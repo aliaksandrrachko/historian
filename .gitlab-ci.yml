@@ -100,9 +100,9 @@ deploy:dev:
     - ls
     - curl https://get.okteto.com -sSfL | sh # download okteto cli
     - export PATH=$PATH:/usr/local/bin/okteto
+    - okteto context use $OKTETO_URL --token $CI_OKTETO_TOKEN --log-level debug --insecure-skip-tls-verify
+    - okteto context list --insecure-skip-tls-verify
     - okteto context list
-    - okteto context use $OKTETO_URL --token $CI_OKTETO_TOKEN
-    - okteto context use $OKTETO_URL
     - okteto kubeconfig
     - kubectl get pod
     - cd $HIST_EVENTS_BASE_DIR
