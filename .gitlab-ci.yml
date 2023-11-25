@@ -90,12 +90,21 @@ template:
 deploy:dev:
   stage: deploy
   image: centosadmin/kubernetes-helm:3.6.3
+  variables:
+    OKTETO_TOKEN: $CI_OKTETO_TOKEN
+    OKTETO_URL: https://okteto.example.com
   script:
     - curl --silent "https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer" | bash 
     - ls
     - export KUBECONFIG=$CI_PROJECT_DIR/.secure_files/okteto-kube.config
     - ls
-    #- curl https://get.okteto.com -sSfL | sh # download okteto cli
+    - curl https://get.okteto.com -sSfL | sh # download okteto cli
+    - export PATH=$PATH:/usr/local/bin/okteto
+    - okteto context list
+    - okteto context use $OKTETO_URL --token $CI_OKTETO_TOKEN
+    - okteto context use $OKTETO_URL
+    - okteto kubeconfig
+    - kubectl get pod
     - cd $HIST_EVENTS_BASE_DIR
     - kubectl config get-contexts
     - kubectl config use-context cloud_okteto_com-context
