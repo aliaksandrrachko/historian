@@ -4,7 +4,6 @@ variables:
   HIST_EVENTS_BASE_DIR: $CI_PROJECT_DIR/historical-events
   HIST_EVENTS_EXECUTABLE: $HIST_EVENTS_BASE_DIR/cmd/historical-events
   K8S_NAMESPACE: ales-litvin
-  $K8S_DEV_API_URL: https://kubernetes.default
 
 stages:
   - lint
