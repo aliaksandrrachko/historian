@@ -94,16 +94,17 @@ deploy:dev:
     OKTETO_TOKEN: $CI_OKTETO_TOKEN
     OKTETO_URL: https://cloud.okteto.com
   script:
-    - curl --silent "https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer" | bash 
-    - ls
-    - export KUBECONFIG=$CI_PROJECT_DIR/.secure_files/okteto-kube.config
-    - ls
+    # - curl --silent "https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer" | bash 
+    # - ls
+    # - export KUBECONFIG=$CI_PROJECT_DIR/.secure_files/okteto-kube.config
+    # - ls
     - curl https://get.okteto.com -sSfL | sh # download okteto cli
     - export PATH=$PATH:/usr/local/bin/okteto
-    - okteto context use $OKTETO_URL --token $CI_OKTETO_TOKEN --log-level debug --insecure-skip-tls-verify
-    - okteto context list --insecure-skip-tls-verify
-    - okteto context list
+    - okteto context use $OKTETO_URL --token $OKTETO_TOKEN
     - okteto kubeconfig
+    - okteto context list
+    - kubectl version --output yaml
+    - okteto kubetoken
     - kubectl get pod
     - cd $HIST_EVENTS_BASE_DIR
     - kubectl config get-contexts
