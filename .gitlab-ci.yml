@@ -92,7 +92,7 @@ deploy:dev:
   image: centosadmin/kubernetes-helm:3.6.3
   variables:
     OKTETO_TOKEN: $CI_OKTETO_TOKEN
-    OKTETO_URL: https://okteto.example.com
+    OKTETO_URL: https://cloud.okteto.com
   script:
     - curl --silent "https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer" | bash 
     - ls
