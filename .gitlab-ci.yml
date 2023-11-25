@@ -3,6 +3,8 @@ image: golang:latest
 variables:
   HIST_EVENTS_BASE_DIR: $CI_PROJECT_DIR/historical-events
   HIST_EVENTS_EXECUTABLE: $HIST_EVENTS_BASE_DIR/cmd/historical-events
+  K8S_NAMESPACE: ales-litvin
+  $K8S_DEV_API_URL: https://kubernetes.default
 
 stages:
   - lint
@@ -85,9 +87,43 @@ template:
   # only:
   #   - master
 
-deploy:
+
+deploy:dev:
   stage: deploy
-  script: echo "Define your deployment script!"
-  environment: development
-  only: 
-    - master
+  image: centosadmin/kubernetes-helm:3.6.3
+  variables:
+    SECURE_FILES_DOWNLOAD_PATH: ./
+    KUBECONFIG: $KUBECONFIG:./okteto-kube.config
+  script:
+    - ll
+    #- curl https://get.okteto.com -sSfL | sh # download okteto cli
+    - cd $HIST_EVENTS_BASE_DIR
+    - kubectl config get-contexts
+    - kubectl config use-context cloud_okteto_com-context
+    - helm upgrade --install historical-events .helm/historical-events-backend
+        --set image.repository=$CI_REGISTRY_IMAGE
+        --set image.tag=$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
+        --debug
+        --atomic
+        --timeout 120s
+        --namespace $K8S_NAMESPACE
+  # only:
+  #   - master
+
+# deploy:dev:
+#   stage: deploy
+#   image: centosadmin/kubernetes-helm:3.6.3
+#   environment:
+#     name: development
+#   script:
+#     - kubectl config set-cluster k8s --insecure-skip-tls-verify=true --server=$K8S_DEV_API_URL
+#     - kubectl config set-credentials ci --token=$K8S_DEV_CI_TOKEN
+#     - kubectl config set-context ci --cluster=k8s --user=ci
+#     - kubectl config use-context ci
+#     - helm upgrade --install xpaste .helm
+#         --set image=$CI_REGISTRY_IMAGE
+#         --set imageTag=$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
+#         --debug
+#         --atomic
+#         --timeout 120s
+#         --namespace $NAMESPACE-$CI_ENVIRON
