@@ -54,7 +54,7 @@ build:
       -ldflags="-X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.version=$CI_COMMIT_TAG' \
           -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.gitCommit=$CI_COMMIT_SHA' \
           -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.gitAuthor=$CI_COMMIT_AUTHOR' \
-          -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.time=$(date)'" \
+          -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.time=$CI_PIPELINE_CREATED_AT'" \
       $HIST_EVENTS_EXECUTABLE.go
   artifacts:
     paths:
