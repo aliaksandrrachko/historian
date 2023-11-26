@@ -57,7 +57,6 @@ lint:helm:
   # only:
   #   - master
 
-
 test:
   <<: *hist_events_base_rule
   stage: test
