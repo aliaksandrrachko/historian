@@ -4,6 +4,22 @@ variables:
   HIST_EVENTS_BASE_DIR: $CI_PROJECT_DIR/historical-events
   HIST_EVENTS_EXECUTABLE: $HIST_EVENTS_BASE_DIR/cmd/historical-events
 
+.hist_events_base_dir: &hist_events_base_dir
+  - cd $HIST_EVENTS_BASE_DIR
+
+.okteto_setup: &okteto_setup
+  variables:
+    OKTETO_VERSION: 2.22.2
+    OKTETO_TOKEN: $CI_OKTETO_TOKEN
+    OKTETO_URL: https://cloud.okteto.com
+    OKTETO_NAMESPACE: ales-litvin
+    K8S_NAMESPACE: $OKTETO_NAMESPACE
+  before_script:
+    - curl https://get.okteto.com -sSfL | sh
+    - export PATH=$PATH:/usr/local/bin/okteto
+    - okteto context
+    - okteto kubeconfig
+
 stages:
   - lint
   - test
@@ -17,7 +33,7 @@ lint:go:
   stage: lint
   allow_failure: false
   script:
-    - cd $HIST_EVENTS_BASE_DIR
+    - *hist_events_base_dir
     - golangci-lint run -v
 
 lint:helm:
@@ -26,7 +42,7 @@ lint:helm:
   environment:
     name: development
   script:
-    - cd $HIST_EVENTS_BASE_DIR
+    - *hist_events_base_dir
     - helm lint .helm/historical-events-backend
       --set image.repository=$CI_REGISTRY_IMAGE
       --set image.tag=$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
@@ -37,7 +53,7 @@ lint:helm:
 test:
   stage: test
   script:
-    - cd $HIST_EVENTS_BASE_DIR
+    - *hist_events_base_dir
     - go fmt $(go list ./... | grep -v /vendor/)
     - go vet $(go list ./... | grep -v /vendor/)
     - go test -race $(go list ./... | grep -v /vendor/)
@@ -48,13 +64,12 @@ build:
     CGO_ENABLED: 0
     GOOS: linux
   script:
-    - cd $HIST_EVENTS_BASE_DIR
-    - |
-      go build -v -o $HIST_EVENTS_EXECUTABLE  \
-      -ldflags="-X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.version=$CI_COMMIT_TAG' \
-          -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.gitCommit=$CI_COMMIT_SHA' \
-          -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.gitAuthor=$CI_COMMIT_AUTHOR' \
-          -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.time=$CI_PIPELINE_CREATED_AT'" \
+    - *hist_events_base_dir
+    - go build -v -o $HIST_EVENTS_EXECUTABLE
+      -ldflags="-X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.version=$CI_COMMIT_TAG'
+        -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.gitCommit=$CI_COMMIT_SHA'
+        -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.gitAuthor=$CI_COMMIT_AUTHOR'
+        -X 'github.com/aliaksandrrachko/historian/historical-events/internal/build.time=$CI_PIPELINE_CREATED_AT'"
       $HIST_EVENTS_EXECUTABLE.go
   artifacts:
     paths:
@@ -68,17 +83,16 @@ build:image:
   script:
     - mkdir -p /kaniko/.docker
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
-    - |
-      /kaniko/executor --context $HIST_EVENTS_BASE_DIR \
-      --cache=true --cache-repo=$CI_REGISTRY_IMAGE \
-      --dockerfile $HIST_EVENTS_BASE_DIR/DockerfilePreBuild \
+    - /kaniko/executor --context $HIST_EVENTS_BASE_DIR
+      --cache=true --cache-repo=$CI_REGISTRY_IMAGE
+      --dockerfile $HIST_EVENTS_BASE_DIR/DockerfilePreBuild
       --destination ${CI_REGISTRY_IMAGE}:$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
 
 template:
   stage: template
   image: centosadmin/kubernetes-helm:3.6.3
   script:
-    - cd $HIST_EVENTS_BASE_DIR
+    - *hist_events_base_dir
     - helm template $CI_PROJECT_PATH_SLUG .helm/historical-events-backend
       --values .helm/historical-events-backend/values-okteto.yaml
       --set image.repository=$CI_REGISTRY_IMAGE
@@ -88,19 +102,11 @@ template:
 
 
 deploy:okteto:dev:
+  <<: *okteto_setup
   stage: deploy
   image: centosadmin/kubernetes-helm:v3.12.3
-  variables:
-    OKTETO_VERSION: 2.22.2
-    OKTETO_TOKEN: $CI_OKTETO_TOKEN
-    OKTETO_URL: https://cloud.okteto.com
-    OKTETO_NAMESPACE: ales-litvin
   script:
-    - curl https://get.okteto.com -sSfL | sh
-    - export PATH=$PATH:/usr/local/bin/okteto
-    - okteto context
-    - okteto kubeconfig
-    - cd $HIST_EVENTS_BASE_DIR
+    - *hist_events_base_dir
     - helm upgrade $CI_PROJECT_PATH_SLUG .helm/historical-events-backend
       --install
       --values .helm/historical-events-backend/values-okteto.yaml
@@ -109,6 +115,6 @@ deploy:okteto:dev:
       --debug
       --atomic
       --timeout 120s
-      --namespace $OKTETO_NAMESPACE
+      --namespace $K8S_NAMESPACE
   # only:
   #   - master

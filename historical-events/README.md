@@ -12,6 +12,8 @@
 * add icon to chart yaml
 * add health-check to deployment
 * check additional configuration in helm chart
+* add reports to test stage
+* add rule for stages
 
 ## Dockerfile
 
