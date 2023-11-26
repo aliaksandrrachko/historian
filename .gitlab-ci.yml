@@ -12,7 +12,7 @@ stages:
   - template
   - deploy
 
-go_lint:
+lint:go:
   image: golangci/golangci-lint:latest
   stage: lint
   allow_failure: false
@@ -20,7 +20,7 @@ go_lint:
     - cd $HIST_EVENTS_BASE_DIR
     - golangci-lint run -v
 
-helm_lint:
+lint:helm:
   stage: lint
   image: centosadmin/kubernetes-helm:3.6.3
   environment:
@@ -60,7 +60,7 @@ build:
     paths:
       - $HIST_EVENTS_EXECUTABLE
 
-build_image:
+build:image:
   stage: image
   image:
     name: gcr.io/kaniko-project/executor:debug-v1.3.0
@@ -87,7 +87,7 @@ template:
   #   - master
 
 
-deploy:dev:
+deploy:okteto:dev:
   stage: deploy
   image: centosadmin/kubernetes-helm:v3.12.3
   variables:
@@ -96,7 +96,7 @@ deploy:dev:
     OKTETO_URL: https://cloud.okteto.com
     OKTETO_NAMESPACE: ales-litvin
   script:
-    - curl https://get.okteto.com -sSfL | sh # download okteto cli
+    - curl https://get.okteto.com -sSfL | sh
     - export PATH=$PATH:/usr/local/bin/okteto
     - okteto context
     - okteto kubeconfig
