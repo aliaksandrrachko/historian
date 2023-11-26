@@ -101,7 +101,8 @@ deploy:dev:
     - okteto context
     - okteto kubeconfig
     - cd $HIST_EVENTS_BASE_DIR
-    - helm template $CI_PROJECT_PATH_SLUG .helm/historical-events-backend
+    - helm upgrade $CI_PROJECT_PATH_SLUG .helm/historical-events-backend
+      --install
       --values .helm/historical-events-backend/values-okteto.yaml
       --set image.repository=$CI_REGISTRY_IMAGE
       --set image.tag=$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
