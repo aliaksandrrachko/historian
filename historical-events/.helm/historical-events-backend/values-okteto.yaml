@@ -13,7 +13,7 @@ image:
 imagePullSecrets:
   - name: historian-gitlab-registry
 nameOverride: ""
-fullnameOverride: ""
+fullnameOverride: hist-events-backend
 
 serviceAccount:
   # Specifies whether a service account should be created
