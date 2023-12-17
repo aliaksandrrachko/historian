@@ -17,6 +17,7 @@ func InitServer() server.HistoricalEventsServer {
 			config.NewRandomConfig,
 			server.NewEngine,
 			server.NewServer,
+			healthCheck.NewDefaultHealthCheck,
 		),
 	)
 }

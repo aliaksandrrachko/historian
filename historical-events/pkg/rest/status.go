@@ -1,4 +1,4 @@
-package status
+package rest
 
 import (
 	"net/http"
@@ -11,11 +11,11 @@ import (
 	"github.com/aliaksandrrachko/historian/historical-events/internal/build"
 )
 
-func RegisterHandlers(router gin.IRouter, logger *logrus.Logger) {
+func RegisterStatusHandlers(router gin.IRouter, logger *logrus.Logger) {
 	res := statusResource{logger}
 
-	router.GET("/status/ping", res.ping)
-	router.GET("/status/version", res.version)
+	router.GET("/ping", res.ping)
+	router.GET("/version", res.version)
 }
 
 type statusResource struct {

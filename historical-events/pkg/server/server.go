@@ -8,7 +8,8 @@ import (
 
 	"github.com/aliaksandrrachko/historian/historical-events/pkg/config"
 	"github.com/aliaksandrrachko/historian/historical-events/pkg/ginlogrus"
-	statusApi "github.com/aliaksandrrachko/historian/historical-events/pkg/rest"
+	"github.com/aliaksandrrachko/historian/historical-events/pkg/health"
+	apiResource "github.com/aliaksandrrachko/historian/historical-events/pkg/rest"
 )
 
 type HistoricalEventsServer interface {
@@ -16,17 +17,24 @@ type HistoricalEventsServer interface {
 }
 
 type historicalEventsServer struct {
-	logger    *logrus.Logger
-	config    config.Config
-	ginEngine *gin.Engine
+	logger      *logrus.Logger
+	config      config.Config
+	ginEngine   *gin.Engine
+	healthCheck health.HealthCheck
 }
 
-func NewServer(logger *logrus.Logger, config config.Config, ginEngine *gin.Engine) HistoricalEventsServer {
-	return historicalEventsServer{logger: logger, config: config, ginEngine: ginEngine}
+func NewServer(
+	logger *logrus.Logger,
+	config config.Config,
+	ginEngine *gin.Engine,
+	healthCheck health.HealthCheck,
+) HistoricalEventsServer {
+	return historicalEventsServer{logger: logger, config: config, ginEngine: ginEngine, healthCheck: healthCheck}
 }
 
 func (server historicalEventsServer) Start() {
-	statusApi.RegisterHandlers(server.ginEngine.Group("/historical-events/api/v1"), server.logger)
+	apiResource.RegisterStatusHandlers(server.ginEngine.Group("/historical-events/api/v1/status"), server.logger)
+	apiResource.RegisterHealthHandlers(server.ginEngine.Group("/historical-events/api/v1/health"), server.logger, server.healthCheck)
 
 	if err := server.ginEngine.Run(fmt.Sprintf("%v:%v", "", server.config.Server.Port)); err != nil {
 		panic(err)

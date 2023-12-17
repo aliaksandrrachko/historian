@@ -9,6 +9,7 @@ package wiregen
 import (
 	"github.com/aliaksandrrachko/historian/historical-events/pkg/config"
 	"github.com/aliaksandrrachko/historian/historical-events/pkg/ginlogrus"
+	"github.com/aliaksandrrachko/historian/historical-events/pkg/health"
 	"github.com/aliaksandrrachko/historian/historical-events/pkg/server"
 )
 
@@ -18,6 +19,7 @@ func InitServer() server.HistoricalEventsServer {
 	logger := ginlogrus.NewLogger()
 	configConfig := config.NewRandomConfig()
 	engine := server.NewEngine(logger, configConfig)
-	historicalEventsServer := server.NewServer(logger, configConfig, engine)
+	healthCheck := health.NewDefaultHealthCheck()
+	historicalEventsServer := server.NewServer(logger, configConfig, engine, healthCheck)
 	return historicalEventsServer
 }
