@@ -42,11 +42,11 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /historical-events/api/v1/status/ping
+              path: /historical-events/api/v1/health/liveness
               port: http
           readinessProbe:
             httpGet:
-              path: /historical-events/api/v1/status/ping
+              path: /historical-events/api/v1/health/readiness
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
