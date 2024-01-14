@@ -12,7 +12,7 @@ variables:
   if: '$CI_OKTETO_DEPLOY == null'
 
 #### Rules ####
-.deploy:rules:okteto:
+.okteto:rules:deploy:
   rules:
     - <<: *if-okteto-deploy-null
       when: never
@@ -121,7 +121,7 @@ build:image:
 template:okteto:dev:
   extends:
     - .base:rules:hist-events
-    - .deploy:rules:okteto
+    - .okteto:rules:deploy
   stage: template
   image: centosadmin/kubernetes-helm:3.6.3
   script:
@@ -137,7 +137,7 @@ template:okteto:dev:
 deploy:okteto:dev:
   extends:
     - .base:rules:hist-events
-    - .deploy:rules:okteto
+    - .okteto:rules:deploy
   <<: 
     - *okteto_setup
   stage: deploy
