@@ -20,6 +20,7 @@ variables:
   rules:
     - <<: *if-okteto-deploy-null
       when: never
+    - <<: *if-commit-branch-main
 
 .base:rules:hist-events:
   rules:
