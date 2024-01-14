@@ -1,6 +1,11 @@
 image: golang:latest
 
-#### Variables ####
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+      when: never
+    - if: $CI_COMMIT_BRANCH
 
 variables:
   HIST_EVENTS_BASE_DIR: $CI_PROJECT_DIR/historical-events
@@ -10,6 +15,9 @@ variables:
 
 .if-okteto-deploy-null: &if-okteto-deploy-null
   if: '$CI_OKTETO_DEPLOY == null'
+
+.if-branch-not-main: &if-branch-not-main
+  if: '$CI_COMMIT_BRANCH != "main"'
 
 #### Rules ####
 .okteto:rules:deploy:
@@ -22,6 +30,11 @@ variables:
     - changes: 
       - historical-events/**
       - .gitlab-ci.yml
+
+.image:rules:
+  rules:
+    - <<: *if-branch-not-main
+      when: never
 
 #### Setup ####
 
@@ -48,6 +61,15 @@ stages:
   - image
   - template
   - deploy
+
+lint:info:
+  extends:
+    - .base:rules:hist-events
+  stage: lint
+  script:
+    - echo "CI_COMMIT_BRANCH - $CI_COMMIT_BRANCH"
+    - echo "CI_PIPELINE_SOURCE - $CI_PIPELINE_SOURCE"
+    - echo "CI_MERGE_REQUEST_EVENT_TYPE - $CI_MERGE_REQUEST_EVENT_TYPE"
 
 lint:go:
   extends:
@@ -106,6 +128,7 @@ build:
 build:image:
   extends:
     - .base:rules:hist-events
+    - .image:rules
   stage: image
   image:
     name: gcr.io/kaniko-project/executor:debug-v1.3.0
