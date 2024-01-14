@@ -1,17 +1,32 @@
 image: golang:latest
 
+#### Variables ####
+
 variables:
   HIST_EVENTS_BASE_DIR: $CI_PROJECT_DIR/historical-events
   HIST_EVENTS_EXECUTABLE: $HIST_EVENTS_BASE_DIR/cmd/historical-events
 
-.hist_events_base_dir: &hist_events_base_dir
-  - cd $HIST_EVENTS_BASE_DIR
+#### Conditions ####
 
-.hist_events_base_rule: &hist_events_base_rule
-  only:
-    changes:
+.if-okteto-deploy-null: &if-okteto-deploy-null
+  if: '$CI_OKTETO_DEPLOY == null'
+
+#### Rules ####
+.okteto:rules:deploy:
+  rules:
+    - <<: *if-okteto-deploy-null
+      when: never
+
+.base:rules:hist-events:
+  rules:
+    - changes: 
       - historical-events/**
       - .gitlab-ci.yml
+
+#### Setup ####
+
+.hist_events_base_dir: &hist_events_base_dir
+  - cd $HIST_EVENTS_BASE_DIR
 
 .okteto_setup: &okteto_setup
   variables:
@@ -35,7 +50,8 @@ stages:
   - deploy
 
 lint:go:
-  <<: *hist_events_base_rule
+  extends:
+    - .base:rules:hist-events
   image: golangci/golangci-lint:latest
   stage: lint
   allow_failure: false
@@ -44,7 +60,8 @@ lint:go:
     - golangci-lint run -v
 
 lint:helm:
-  <<: *hist_events_base_rule
+  extends:
+    - .base:rules:hist-events
   stage: lint
   image: centosadmin/kubernetes-helm:3.6.3
   environment:
@@ -58,7 +75,8 @@ lint:helm:
   #   - master
 
 test:
-  <<: *hist_events_base_rule
+  extends:
+    - .base:rules:hist-events
   stage: test
   script:
     - *hist_events_base_dir
@@ -67,7 +85,8 @@ test:
     - go test -race $(go list ./... | grep -v /vendor/)
 
 build:
-  <<: *hist_events_base_rule
+  extends:
+    - .base:rules:hist-events
   stage: build
   variables: 
     CGO_ENABLED: 0
@@ -85,7 +104,8 @@ build:
       - $HIST_EVENTS_EXECUTABLE
 
 build:image:
-  <<: *hist_events_base_rule
+  extends:
+    - .base:rules:hist-events
   stage: image
   image:
     name: gcr.io/kaniko-project/executor:debug-v1.3.0
@@ -98,8 +118,10 @@ build:image:
       --dockerfile $HIST_EVENTS_BASE_DIR/DockerfilePreBuild
       --destination ${CI_REGISTRY_IMAGE}:$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
 
-template:
-  <<: *hist_events_base_rule
+template:okteto:dev:
+  extends:
+    - .base:rules:hist-events
+    - .okteto:rules:deploy
   stage: template
   image: centosadmin/kubernetes-helm:3.6.3
   script:
@@ -113,9 +135,11 @@ template:
 
 
 deploy:okteto:dev:
+  extends:
+    - .base:rules:hist-events
+    - .okteto:rules:deploy
   <<: 
     - *okteto_setup
-    - *hist_events_base_rule
   stage: deploy
   image: centosadmin/kubernetes-helm:v3.12.3
   script:
