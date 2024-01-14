@@ -54,6 +54,15 @@ stages:
   - template
   - deploy
 
+lint:info:
+  extends:
+    - .base:rules:hist-events
+  stage: lint
+  script:
+    - echo "CI_COMMIT_BRANCH - $CI_COMMIT_BRANCH"
+    - echo "CI_PIPELINE_SOURCE - $CI_PIPELINE_SOURCE"
+    - echo "CI_MERGE_REQUEST_EVENT_TYPE - $CI_MERGE_REQUEST_EVENT_TYPE"
+
 lint:go:
   extends:
     - .base:rules:hist-events
