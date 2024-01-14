@@ -1,12 +1,5 @@
 image: golang:latest
 
-workflow:
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
-      when: never
-    - if: $CI_COMMIT_BRANCH
-
 variables:
   HIST_EVENTS_BASE_DIR: $CI_PROJECT_DIR/historical-events
   HIST_EVENTS_EXECUTABLE: $HIST_EVENTS_BASE_DIR/cmd/historical-events
@@ -16,8 +9,11 @@ variables:
 .if-okteto-deploy-null: &if-okteto-deploy-null
   if: '$CI_OKTETO_DEPLOY == null'
 
-.if-branch-not-main: &if-branch-not-main
-  if: '$CI_COMMIT_BRANCH != "main"'
+.if-commit-branch: &if-commit-branch
+  if: '$CI_COMMIT_BRANCH'
+
+.if-commit-branch-main: &if-commit-branch-main
+  if: '$CI_COMMIT_BRANCH == "main"'
 
 #### Rules ####
 .okteto:rules:deploy:
@@ -33,8 +29,7 @@ variables:
 
 .image:rules:
   rules:
-    - <<: *if-branch-not-main
-      when: never
+    - <<: *if-commit-branch-main
 
 #### Setup ####
 
@@ -53,6 +48,14 @@ variables:
     - export PATH=$PATH:/usr/local/bin/okteto
     - okteto context
     - okteto kubeconfig
+
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+      when: never
+    - <<: *if-commit-branch
 
 stages:
   - lint
