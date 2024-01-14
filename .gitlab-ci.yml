@@ -16,6 +16,9 @@ variables:
 .if-okteto-deploy-null: &if-okteto-deploy-null
   if: '$CI_OKTETO_DEPLOY == null'
 
+.if-branch-not-main: &if-branch-not-main
+  if: '$CI_COMMIT_BRANCH != "main"'
+
 #### Rules ####
 .okteto:rules:deploy:
   rules:
@@ -27,6 +30,11 @@ variables:
     - changes: 
       - historical-events/**
       - .gitlab-ci.yml
+
+.image:rules:
+  rules:
+    - <<: *if-branch-not-main
+      when: never
 
 #### Setup ####
 
@@ -120,6 +128,7 @@ build:
 build:image:
   extends:
     - .base:rules:hist-events
+    - .image:rules
   stage: image
   image:
     name: gcr.io/kaniko-project/executor:debug-v1.3.0
